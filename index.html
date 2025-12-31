@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video with VAST Ad</title>
-  <!-- Video.js CSS -->
+  <title>Video with VAST Ad & Loop</title>
   <link href="https://vjs.zencdn.net/8.20.1/video-js.css" rel="stylesheet" />
   <style>
     body {
@@ -23,18 +22,19 @@
 </head>
 <body>
 
-<!-- Video.js Player -->
 <video
   id="my-video"
   class="video-js vjs-default-skin"
   controls
   preload="auto"
+  muted
+  autoplay
+  loop
   data-setup='{}'>
   <source src="video.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
-<!-- Video.js Scripts -->
 <script src="https://vjs.zencdn.net/8.20.1/video.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-ads@6.10.2/dist/videojs-contrib-ads.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-ima@1.9.0/dist/videojs.ima.min.js"></script>
@@ -42,20 +42,30 @@
 <script>
   var player = videojs('my-video');
 
-  // Initialize VAST/IMA plugin with your ad URL
+  // Initialize VAST/IMA plugin
   player.ima({
-    adTagUrl: 'https://strong-training.com/d/mNF.zxd/G-NQvRZUGxUw/Dejmc9quxZBU/l/k/PgT/YO3mMczfgN2/MuzkUptcNOjscGz/OID/YCziNeiRZMshaYWR1/pfd/Dw0txx'
+    adTagUrl: 'https://strong-training.com/d/mNF.zxd/G-NQvRZUGxUw/Dejmc9quxZBU/l/k/PgT/YO3mMczfgN2/MuzkUptcNOjscGz/OID/YCziNeiRZMshaYWR1/pfd/Dw0txx',
+    debug: true
   });
 
   player.ready(function() {
     // Initialize ad display container
     player.ima.initializeAdDisplayContainer();
 
-    // Listen for the first user click/play to request ads
-    player.one('play', function() {
-      player.ima.requestAds(); // Request VAST ad
-      player.play();           // Play video after ad
+    // Automatically request ads on load
+    player.ima.requestAds();
+
+    // Play the video muted first (required for autoplay)
+    player.play();
+
+    // Unmute after ad finishes
+    player.on('adend', function() {
+      player.muted(false);
     });
+
+    // Optional: loop is already enabled via 'loop' attribute
+    // But you can also do it via JS if needed:
+    // player.on('ended', function() { player.play(); });
   });
 </script>
 
